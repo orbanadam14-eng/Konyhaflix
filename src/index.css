@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* A design system. Minden szin HSL.
+   Figyelem: nincs kulon .dark blokk. A korabbi projektben a .dark a shadcn
+   gyari kekesszurke palettajat tartalmazta, ami ratevedve elrontotta az egesz oldalt. */
+@layer base {
+  :root {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 100%;
+    --primary: 357 92% 47%;
+    --primary-foreground: 0 0% 100%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 70%;
+    --border: 0 0% 20%;
+    --radius: 0.25rem;
+  }
+  * { border-color: hsl(var(--border)); }
+  body { @apply bg-background text-foreground antialiased; }
+  h1, h2, h3 { text-wrap: balance; }
+}
+
+@layer utilities {
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+}
+
+/* A lejatszo bevezeto animacioja. Rovid, mert a nezesbol vesz el. */
+@keyframes kfFade { 0%, 62% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes kfZoom {
+  0%   { transform: scale(0.7); opacity: 0; letter-spacing: 0.4em; }
+  35%  { transform: scale(1);   opacity: 1; letter-spacing: -0.02em; }
+  100% { transform: scale(1.12); opacity: 1; letter-spacing: -0.02em; }
+}
+.kf-intro { animation: kfFade 1.8s ease forwards; }
+.kf-intro-word { animation: kfZoom 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kf-intro, .kf-intro-word { animation-duration: 0.01s; }
+}
+
+/* Finom belepok. Nem latvanyossag, hanem hogy ne rangatozzon az oldal. */
+@keyframes kfFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes kfRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.kf-fade-in { animation: kfFadeIn 1.2s ease both; }
+.kf-rise { animation: kfRise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kf-fade-in, .kf-rise { animation: none; }
+}
