@@ -61,6 +61,8 @@ export const MINI: Record<string, [string, number]> = {"HPGhybwnSLY":["miert-fon
 type Raw = [string, string, number, number, string, number, string, number];
 
 const RAW: Raw[] = [
+["kJR15E5Dijw","Célirány X Konyhaszakértő: Konyhatrendek",0,0,"kesz-konyha|kivitelezes",0,"",0],
+["bh19AOCHckE","10+1 gondolat, hogy mire figyeljünk a konyha tervezésénél",0,0,"hibak|meretek|gepek",0,"",0],
 ["u9jzxSjrzhY","A rossz adottságú helyiség megdöbbentő átváltozása",367,0,"hibak|atalakitas",500000,"",0],
 ["ZuUnGWAMXaA","Konyha, nappali és előszoba egy légtérben",425,0,"kesz-konyha",192000,"",0],
 ["4qzOxwycNUU","2022 legújabb konyhái",144,0,"kesz-konyha",155000,"",0],
@@ -124,10 +126,10 @@ const RAW: Raw[] = [
 ["I6G5ZEgSAHA","Jó ötletek: zöld konyhabútor",114,0,"kesz-konyha",29000,"",0],
 ["wa-SKQRQMr0","Konyháról konyhára S01E03 - Konyha, mint élettér",1517,0,"kesz-konyha",28000,"konyharol-konyhara",3],
 ["XoIgFQECgT8","Modern minimál konyhabútor - ötletes konyhatervezés",270,0,"kesz-konyha",28000,"",0],
-["NGC94qTlIVs","Sárközi Ákos konyhája - I. rész",354,0,"kesz-konyha",27000,"sarkozi",5],
+["NGC94qTlIVs","Sárközi Ákos konyhája - I. rész",354,0,"kesz-konyha",27000,"sarkozi",1],
 ["rcZC77OPuuY","Minőségi konyhabútorok remek ötletekkel",261,0,"kesz-konyha",26000,"",0],
 ["svyLFYJYWwg","Rohanó életet élünk. De hol az élettér?",38,1,"kesz-konyha",25435,"",0],
-["DGvja8kUNUU","Sárközi Ákos konyhája - II. rész",342,0,"kesz-konyha",25000,"sarkozi",6],
+["DGvja8kUNUU","Sárközi Ákos konyhája - II. rész",342,0,"kesz-konyha",25000,"sarkozi",2],
 ["qOn1KRC0iqw","Barna rusztikus fa konyha",326,0,"kesz-konyha",24000,"",0],
 ["9Xx08sUffFo","Bemutatótermi konyha az otthonodba",222,0,"kivitelezes|atalakitas",24000,"",0],
 ["0YLjRQe1qRM","Egyedi modern konyha szigettel - különleges ötletekkel",278,0,"kesz-konyha",24000,"",0],
@@ -157,7 +159,7 @@ const RAW: Raw[] = [
 ["xlYYqrU8nuY","Modern konyha klasszikus hangulatban",221,0,"kesz-konyha",13000,"",0],
 ["ydGA8x9VQLM","Sárközi Ákos a bemutatótermünkben",367,0,"kesz-konyha",13000,"sarkozi",4],
 ["dx91R5wcCdM","Harmonikus elegancia az aranyló konyhában",268,0,"gepek|tarolas|kesz-konyha|vilagitas|mosogato",12000,"",0],
-["q2QoWm1Wc1o","Sárközi Ákos konyhája egy percben!",66,0,"kesz-konyha",12000,"sarkozi",7],
+["q2QoWm1Wc1o","Sárközi Ákos konyhája egy percben!",66,0,"kesz-konyha",12000,"sarkozi",3],
 ["2o8HJG3yMrw","Ideiglenes konyha 1-2 évre? Wooow",36,1,"kesz-konyha",11391,"",0],
 ["fjz-zGNAGoc","(cím nélküli short)",22,0,"kesz-konyha",11000,"",0],
 ["ByqLwR4iw_c","Jó ötletek: hogyan rejtsük el",42,0,"kesz-konyha",11000,"",0],
@@ -175,9 +177,9 @@ const RAW: Raw[] = [
 ["qD920uIQ8c4","Jó ötletek: rusztikus és praktikus konyhabútorok",196,0,"kesz-konyha",8600,"",0],
 ["mzWb6B4Ftjo","Cseh László is a Konyhaszakértőt választotta",327,0,"kesz-konyha",8300,"",0],
 ["q2_RpeJav2M","Konyháról konyhára S01E04 - Géptanácsadás",1308,0,"gepek",7900,"konyharol-konyhara",4],
-["evKfGOxdXLs","Szilveszteri főzés Sárközi Ákossal",1087,0,"kesz-konyha",7300,"sarkozi",3],
+["evKfGOxdXLs","Szilveszteri főzés Sárközi Ákossal",1087,0,"kesz-konyha",7300,"sarkozi",6],
 ["Z9kHtFESB9I","Modern konyha mindennapi használatra",327,0,"kesz-konyha",7000,"",0],
-["eFU1gTOzh8g","Géptanácsadás Sárközi Ákossal",499,0,"gepek",6800,"sarkozi",1],
+["eFU1gTOzh8g","Géptanácsadás Sárközi Ákossal",499,0,"gepek",6800,"sarkozi",5],
 ["OhB6onrV70A","Lenyűgöző és harmonikus konyha",237,0,"kesz-konyha",6300,"",0],
 ["rU5hUD5DBWs","Titkos tároló az igazi háziasszonyoknak",12,1,"tarolas",5936,"",0],
 ["CTVtZKTFLFc","Berendeztünk egy teljes lakást Budapesten",423,0,"tarolas|atalakitas",5400,"",0],
@@ -185,7 +187,7 @@ const RAW: Raw[] = [
 ["FEjdDmtz7nU","Rusztikus konyha egy kiállításon 2003-ban",224,0,"kesz-konyha",5200,"",0],
 ["kuP1SVdnDkw","Ismerd meg a minőségi konyhabútorok világát",96,0,"kesz-konyha",5100,"",0],
 ["EGjdYl1Ffnc","Modern konyhabútorok praktikus ötletekkel",108,0,"kesz-konyha",5000,"",0],
-["X-fGku3-rHQ","Karácsonyi főzés Sárközi Ákossal",1172,0,"kesz-konyha",4400,"sarkozi",2],
+["X-fGku3-rHQ","Karácsonyi főzés Sárközi Ákossal",1172,0,"kesz-konyha",4400,"sarkozi",7],
 ["oDuQf7qCme4","Konyhaötletek: a mosogató",47,0,"mosogato",4300,"",0],
 ["3RWeZYeUpOs","Imádom a konyhádat!",133,0,"kesz-konyha",3700,"ugyfelsztori",2],
 ["s0kh9hOr6ac","Tippek modern konyhákhoz - Electrolux kompakt készülékek",71,0,"gepek|kivitelezes",3700,"",0],
@@ -275,6 +277,10 @@ export const videos: Video[] = RAW.map(([id, title, duration, t, topics, views, 
     ? { series, episode: episode || undefined }
     : {}),
 }));
+
+/** Csak a valóban sorszámozott sorozatoknál mutatunk "N. rész" jelvényt. A Sárközi- és ügyfélsztori-sor csak rendezett gyűjtemény. */
+export const NUMBERED_SERIES = new Set<string>(["konyharol-konyhara", ...new Set(Object.values(MINI).map(m => m[0]))]);
+export const episodeLabel = (v: Video) => (v.series && v.episode && NUMBERED_SERIES.has(v.series) ? `${v.episode}. rész` : "");
 
 export const bySlug = (s: string) => videos.find(v => v.slug === s);
 export const byId = (i: string) => videos.find(v => v.id === i);
