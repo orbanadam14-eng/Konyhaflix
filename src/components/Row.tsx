@@ -75,7 +75,7 @@ export default function Row({ id, title, description, intro, href, items, vertic
           <ChevronLeft className="h-8 w-8" />
         </button>
 
-        <div ref={box} className="hide-scrollbar flex snap-x gap-3 overflow-x-auto scroll-smooth px-4 pb-2 md:px-12">
+        <div ref={box} className="hide-scrollbar flex snap-x gap-3 overflow-x-auto scroll-smooth px-4 pb-2 scroll-pl-4 md:px-12 md:scroll-pl-12">
           {items.map((v) => (
             <VideoCard key={v.id} video={v} rowIds={ids} source={id} vertical={vertical} archive={archive} />
           ))}
