@@ -84,7 +84,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div id="sorok" className="relative z-10 -mt-16 flex flex-col gap-8 pb-8 md:gap-12">
+      <div id="sorok" className="relative z-10 -mt-16 flex flex-col gap-8 pb-8 md:gap-10">
         {cont.length >= 1 && (
           <Row
             id="folytasd"

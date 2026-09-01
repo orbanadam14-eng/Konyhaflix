@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { bySlug, TOPICS, SERIES, bySeries, type Video } from "../data/videos";
+import { bySlug, TOPICS, SERIES, bySeries, episodeLabel, type Video } from "../data/videos";
 import { buildQueue, related } from "../lib/queue";
 import { outbound, track } from "../lib/track";
 import { thumbHi } from "../lib/yt";
@@ -69,7 +69,7 @@ export default function VideoPage({ modal }: { modal?: boolean }) {
 
         {video.series && (
           <p className="mb-3 text-sm text-white/60">
-            {video.episode ? `${video.episode}. rész, ` : ""}
+            {episodeLabel(video) ? `${episodeLabel(video)}, ` : ""}
             <Link to={`/sorozat/${video.series}`} className="text-primary hover:underline">
               {SERIES[video.series]}
             </Link>
