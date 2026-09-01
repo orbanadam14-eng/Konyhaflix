@@ -5,7 +5,11 @@
 
 import { contactId, watchedIds } from "./track";
 
-const URL_ = import.meta.env.VITE_GHL_WEBHOOK as string | undefined;
+// GHL "N20 KonyhaFlix 3 videó megnézve → hívandó jelzés" workflow inbound webhookja.
+// Env-ből felülírható (VITE_GHL_WEBHOOK), különben ez az alapértelmezett.
+const DEFAULT_WEBHOOK =
+  "https://services.leadconnectorhq.com/hooks/6ZH78s3fcLqDp5Ji2jmF/webhook-trigger/vy0t3HIdqXp0e5wc21WE";
+const URL_ = (import.meta.env.VITE_GHL_WEBHOOK as string | undefined) || DEFAULT_WEBHOOK;
 const SENT = "kf_ghl_sent";
 
 /** Minden 3. uj megnezett videonal szolunk a GHL-nek. */
