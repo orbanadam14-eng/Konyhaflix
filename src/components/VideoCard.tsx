@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Play } from "lucide-react";
-import type { Video } from "../data/videos";
+import { episodeLabel, type Video } from "../data/videos";
 import { thumb, fmt } from "../lib/yt";
 import { percent } from "../lib/progress";
 
@@ -34,7 +34,7 @@ export default function VideoCard({ video, rowIds, source, vertical, archive }: 
       state={{ backgroundLocation: loc, rowIds, source }}
       onMouseEnter={enter}
       onMouseLeave={leave}
-      className={`group/card relative block shrink-0 snap-start ${vertical ? "w-[150px] md:w-[190px]" : "w-[220px] md:w-[300px]"}`}
+      className={`group/card relative block shrink-0 snap-start ${vertical ? "kf-card-v" : "kf-card"}`}
     >
       <div
         className={`relative overflow-hidden rounded bg-black transition duration-300 group-hover/card:scale-[1.05] group-hover/card:z-20 ${
@@ -61,9 +61,9 @@ export default function VideoCard({ video, rowIds, source, vertical, archive }: 
             {fmt(video.duration)}
           </span>
         )}
-        {video.episode && (
+        {episodeLabel(video) && (
           <span className="absolute left-2 top-2 z-10 rounded bg-primary px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
-            {video.episode}. rész
+            {episodeLabel(video)}
           </span>
         )}
         {archive && (
