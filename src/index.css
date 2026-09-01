@@ -51,10 +51,14 @@
 }
 
 /* Kártyaméret: a nézet szélességéhez és magasságához igazodik, hogy asztali gépen ne legyen túl nagy.
-   Fekvő kártya: kb. 4,3 / 5,3 / 6,3 kártya fér egy sorba, de legfeljebb a nézet magasságának 28%-a. */
+   Fekvő kártya: kb. 3,3 / 4,3 / 5,3 / 6,3 kártya fér egy sorba, de legfeljebb a nézet magasságának 28%-a. */
 .kf-card { width: 220px; }
 .kf-card-v { width: 150px; }
 @media (min-width: 768px) {
+  .kf-card   { width: min(calc((100vw - 6rem) / 3.3), calc(28vh * 16 / 9), 320px); }
+  .kf-card-v { width: min(calc((100vw - 6rem) / 5.3), calc(40vh * 9 / 16), 200px); }
+}
+@media (min-width: 1024px) {
   .kf-card   { width: min(calc((100vw - 6rem) / 4.3), calc(28vh * 16 / 9), 320px); }
   .kf-card-v { width: min(calc((100vw - 6rem) / 7.3), calc(40vh * 9 / 16), 200px); }
 }
