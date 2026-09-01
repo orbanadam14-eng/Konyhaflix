@@ -12,8 +12,8 @@ import Row from "../components/Row";
 import Seo from "../components/Seo";
 
 // Friss, latvanyos videó. Regi anyag SOHA ne kerüljön a heróba.
-const HERO_ID = "DGvja8kUNUU";
-const HERO_START = 211; // 3:31
+const HERO_ID = "NGC94qTlIVs"; // Sárközi Ákos konyhája, I. rész
+const HERO_START = 45;
 const TURA = "https://konyhatura.konyhaszakerto.hu";
 
 export default function Home() {
