@@ -137,7 +137,7 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
 
   return (
     <div className="relative w-full bg-black">
-      <div className={vertical ? "relative aspect-[9/16] w-full" : "relative aspect-video w-full"}>
+      <div className={vertical ? "relative mx-auto aspect-[9/16] h-[min(85vh,177vw)] max-w-full" : "relative aspect-video w-full"}>
         <div ref={host} className="absolute inset-0 h-full w-full" />
 
         {intro && (
