@@ -8,6 +8,45 @@ const UTM_KEY = "kf_utm";
 declare global {
   interface Window {
     dataLayer?: Record<string, unknown>[];
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
+/**
+ * A belso esemenyek Meta-megfeleloi.
+ * A "standard" a Meta sajat esemenyneve (track), a "custom" sajat nev (trackCustom).
+ * A Video75 a legfontosabb: ebbol epul a retargeting kozonseg.
+ */
+const META_EVENTS: Record<string, { name: string; standard: boolean }> = {
+  page_view: { name: "PageView", standard: true },
+  video_start: { name: "ViewContent", standard: true },
+  video_25: { name: "Video25", standard: false },
+  video_50: { name: "Video50", standard: false },
+  video_75: { name: "Video75", standard: false },
+  video_complete: { name: "VideoComplete", standard: false },
+  video_complete_unique: { name: "VideoUnique", standard: false },
+  cta_click: { name: "Schedule", standard: true },
+  email_signup: { name: "Lead", standard: true },
+};
+
+/** A Meta pixel csak a szamara ertelmes mezoket kapja meg. */
+function metaPayload(event: string, data: Record<string, unknown>) {
+  const out: Record<string, unknown> = {};
+  if (data.video_title) out.content_name = data.video_title;
+  if (data.video_id) out.content_ids = [data.video_id];
+  if (event.startsWith("video")) out.content_type = "video";
+  if (data.place) out.content_name = out.content_name || `kf-${data.place}`;
+  if (typeof data.total_watched === "number") out.value = data.total_watched;
+  return out;
+}
+
+function sendToMeta(event: string, data: Record<string, unknown>) {
+  const map = META_EVENTS[event];
+  if (!map || typeof window.fbq !== "function") return;
+  try {
+    window.fbq(map.standard ? "track" : "trackCustom", map.name, metaPayload(event, data));
+  } catch {
+    // A meres soha ne allitsa meg a nezest.
   }
 }
 
@@ -33,6 +72,7 @@ export function track(event: string, data: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event, contact_id: contactId(), ...data });
+  sendToMeta(event, data);
 }
 
 // Hany videot nezett meg ebben az ulesben, es osszesen.
