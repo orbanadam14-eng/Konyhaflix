@@ -6,7 +6,7 @@ import { loadYT, PLAYER_VARS, thumb, fmt } from "../lib/yt";
 import { setProgress, resumeAt } from "../lib/progress";
 import { track, markWatched } from "../lib/track";
 import { reportWatch } from "../lib/ghl";
-import { LOGO_KONYHAFLIX } from "../lib/brand";
+import Wordmark from "./Wordmark";
 
 const COUNTDOWN = 8;
 
@@ -27,7 +27,7 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
   const [count, setCount] = useState(COUNTDOWN);
   const [cancelled, setCancelled] = useState(false);
   const [resume, setResume] = useState(0);
-  // A KonyhaFlix bevezeto csak az elso inditasnal fut le, hogy ne lassitsa a tovabblepest.
+  // A Videotar bevezeto csak az elso inditasnal fut le, hogy ne lassitsa a tovabblepest.
   const [intro, setIntro] = useState(() => {
     if (typeof window === "undefined") return false;
     if (sessionStorage.getItem("kf_intro")) return false;
@@ -145,7 +145,7 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
             className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center bg-black kf-intro"
             onAnimationEnd={() => setIntro(false)}
           >
-            <img src={LOGO_KONYHAFLIX} alt="KonyhaFlix" className="kf-intro-word w-2/3 max-w-md object-contain" />
+            <Wordmark size="lg" className="kf-intro-word" />
           </div>
         )}
 
@@ -163,7 +163,7 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
           <div className="absolute bottom-16 left-1/2 z-20 -translate-x-1/2 rounded bg-black/85 px-4 py-2 text-sm text-white shadow-lg">
             <span className="mr-3">Onnan folytatod, ahol abbahagytad ({fmt(resume)}).</span>
             <button
-              className="font-semibold text-primary underline"
+              className="font-semibold text-accent underline"
               onClick={() => {
                 player.current?.seekTo(0, true);
                 setResume(0);

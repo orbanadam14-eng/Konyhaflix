@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { outbound, track } from "../lib/track";
-import { LOGO_KONYHAFLIX } from "../lib/brand";
+import Wordmark from "./Wordmark";
 
 const TURA = "https://konyhatura.konyhaszakerto.hu";
 
@@ -33,8 +33,8 @@ export default function Header() {
       }`}
     >
       <div className="flex min-w-0 items-center gap-6">
-        <Link to="/" className="shrink-0" aria-label="KonyhaFlix, kezdőlap">
-          <img src={LOGO_KONYHAFLIX} alt="KonyhaFlix" className="h-7 w-auto object-contain md:h-9" />
+        <Link to="/" className="shrink-0" aria-label="Videótár, kezdőlap">
+          <Wordmark />
         </Link>
         <nav className="hidden items-center gap-5 text-sm text-white/85 lg:flex">
           {links.map((l) => (
@@ -77,7 +77,7 @@ export default function Header() {
           target="_blank"
           rel="noreferrer"
           onClick={() => track("cta_click", { place: "header" })}
-          className="whitespace-nowrap rounded bg-primary px-3 py-1.5 text-xs font-bold text-white transition hover:bg-primary/85 md:px-4 md:py-2 md:text-sm"
+          className="whitespace-nowrap rounded bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground transition hover:brightness-110 md:px-4 md:py-2 md:text-sm"
         >
           Konyhatúra időpont
         </a>

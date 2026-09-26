@@ -16,7 +16,7 @@ export default function Footer() {
             target="_blank"
             rel="noreferrer"
             onClick={() => track("cta_click", { place: "footer" })}
-            className="inline-block rounded bg-primary px-7 py-3 font-bold text-white transition hover:bg-primary/85"
+            className="inline-block rounded bg-primary px-7 py-3 font-bold text-primary-foreground transition hover:brightness-110"
           >
             Időpontot foglalok
           </a>
@@ -46,7 +46,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <p className="mt-8 text-xs text-white/35">KonyhaFlix, a Konyhaszakértő videótára.</p>
+        <p className="mt-8 text-xs text-white/35">Konyhaszakértő Videótár. Minden konyhás videónk egy helyen.</p>
       </div>
     </footer>
   );

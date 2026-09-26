@@ -87,11 +87,11 @@ function Empty() {
       <p className="mb-3">Erre most nincs videónk.</p>
       <p className="text-sm">
         Írd meg, miről csináljunk:{" "}
-        <a className="text-primary hover:underline" href="mailto:erdeklodes@konyhaszakerto.hu">
+        <a className="text-accent hover:underline" href="mailto:erdeklodes@konyhaszakerto.hu">
           erdeklodes@konyhaszakerto.hu
         </a>
       </p>
-      <Link to="/" className="mt-5 inline-block rounded bg-primary px-5 py-2 text-sm font-bold text-white">
+      <Link to="/" className="mt-5 inline-block rounded bg-primary px-5 py-2 text-sm font-bold text-primary-foreground">
         Vissza a kezdőlapra
       </Link>
     </div>

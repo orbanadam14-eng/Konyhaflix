@@ -93,7 +93,7 @@ export default function Kerdoiv() {
         <p className="mb-8 text-white/60">Addig is ezt neked válogattuk:</p>
         <Link
           to={sug.href}
-          className="inline-block rounded bg-primary px-7 py-3 text-lg font-bold text-white transition hover:bg-primary/85"
+          className="inline-block rounded bg-primary px-7 py-3 text-lg font-bold text-primary-foreground transition hover:brightness-110"
         >
           {sug.label}
         </Link>
@@ -128,7 +128,7 @@ export default function Kerdoiv() {
                     onClick={() => setA((p) => ({ ...p, [q.key]: o }))}
                     className={`rounded-full border px-4 py-2 text-sm transition ${
                       a[q.key] === o
-                        ? "border-primary bg-primary font-bold text-white"
+                        ? "border-primary bg-primary font-bold text-primary-foreground"
                         : "border-white/25 text-white/75 hover:border-white/60 hover:text-white"
                     }`}
                   >
@@ -149,12 +149,12 @@ export default function Kerdoiv() {
         ))}
       </div>
 
-      {err && <p className="mt-6 text-sm font-semibold text-primary">{err}</p>}
+      {err && <p className="mt-6 text-sm font-semibold text-accent">{err}</p>}
 
       <button
         onClick={submit}
         disabled={busy}
-        className="mt-8 w-full rounded bg-primary px-7 py-4 text-lg font-bold text-white transition hover:bg-primary/85 disabled:opacity-50"
+        className="mt-8 w-full rounded bg-primary px-7 py-4 text-lg font-bold text-primary-foreground transition hover:brightness-110 disabled:opacity-50"
       >
         {busy ? "Küldés…" : "Elküldöm"}
       </button>

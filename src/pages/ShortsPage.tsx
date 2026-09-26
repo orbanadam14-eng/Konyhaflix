@@ -113,7 +113,7 @@ export default function ShortsPage() {
         <section className="flex h-[100dvh] snap-start flex-col items-center justify-center gap-5 px-6 text-center">
           <p className="text-lg text-white">Ezeket már mind láttad.</p>
           <p className="text-white/60">Nézd meg a hosszabbakat is, ott van a lényeg.</p>
-          <Link to="/" className="rounded bg-primary px-6 py-3 font-bold text-white">
+          <Link to="/" className="rounded bg-primary px-6 py-3 font-bold text-primary-foreground">
             Vissza a kezdőlapra
           </Link>
         </section>
