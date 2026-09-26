@@ -67,9 +67,9 @@ export default function Home() {
             <Link
               to={`/video/${hero.slug}`}
               state={{ backgroundLocation: loc, source: "hero" }}
-              className="flex items-center gap-2 rounded bg-white px-7 py-3 text-lg font-bold text-black transition hover:bg-white/85"
+              className="group/cta flex items-center gap-2 rounded bg-powder px-7 py-3 text-lg font-bold text-ink transition hover:bg-primary hover:text-primary-foreground"
             >
-              <Play className="h-5 w-5 fill-black" /> Kezdd itt
+              <Play className="h-5 w-5 fill-ink transition group-hover/cta:fill-primary-foreground" /> Kezdd itt
             </Link>
             <a
               href="#sorok"
@@ -115,7 +115,7 @@ export default function Home() {
                   target="_blank"
                   rel="noreferrer"
                   onClick={() => track("cta_click", { place: "mid" })}
-                  className="inline-block rounded bg-primary px-8 py-4 text-lg font-bold text-white transition hover:bg-primary/85"
+                  className="inline-block rounded bg-primary px-8 py-4 text-lg font-bold text-primary-foreground transition hover:brightness-110"
                 >
                   Ingyenes konyhatúra időpontot kérek
                 </a>
@@ -128,7 +128,7 @@ export default function Home() {
         {shortBand.length > 0 && (
           <section className="border-y border-white/10 bg-[#0f0f0f] py-10">
             <div className="mb-6 px-4 md:px-12">
-              <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.25em] text-primary">Egy perc alatt</p>
+              <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.25em] text-accent">Egy perc alatt</p>
               <h2 className="text-2xl font-bold text-white md:text-3xl">Rövid válaszok, sorozatokba szedve</h2>
               <p className="mt-1 max-w-2xl text-[13px] leading-snug text-white/55 md:text-sm">
                 Egy kérdés, egy válasz, fél perc. Hat sorozat, mindegyik végignézhető egy kávé alatt.
@@ -173,20 +173,20 @@ export default function Home() {
       <section className="px-4 pb-4 md:px-12">
         <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-2">
           <div className="flex flex-col items-start rounded border border-white/10 bg-[#181818] p-8 transition hover:border-white/30">
-            <h3 className="mb-2 text-xl font-bold text-white md:text-2xl">Nincs időd hosszú videóra?</h3>
+            <h3 className="mb-2 font-display text-xl font-bold text-white md:text-2xl">Nincs időd hosszú videóra?</h3>
             <p className="mb-6 flex-grow text-sm text-white/60 md:text-base">
               Egy perc alatt egy kérdés, egy válasz. Görgetsz, és jön a következő.
             </p>
             <Link
               to="/shorts"
-              className="flex items-center gap-2 rounded bg-white px-7 py-3 font-bold text-black transition hover:bg-white/85"
+              className="flex items-center gap-2 rounded bg-powder px-7 py-3 font-bold text-ink transition hover:bg-primary hover:text-primary-foreground"
             >
               <Zap className="h-5 w-5" /> Rövid videók
             </Link>
           </div>
           <div className="flex flex-col items-start rounded bg-primary p-8">
-            <h3 className="mb-2 text-xl font-bold text-white md:text-2xl">Gyere el a konyhatúrára</h3>
-            <p className="mb-6 flex-grow text-sm text-white/90 md:text-base">
+            <h3 className="mb-2 font-display text-xl font-bold text-primary-foreground md:text-2xl">Gyere el a konyhatúrára</h3>
+            <p className="mb-6 flex-grow text-sm text-primary-foreground/90 md:text-base">
               Fél óra a budaörsi bemutatóteremben: rejtett tárolók, ergonómia, anyagok élőben.
             </p>
             <a
@@ -194,7 +194,7 @@ export default function Home() {
               target="_blank"
               rel="noreferrer"
               onClick={() => track("cta_click", { place: "home-end" })}
-              className="rounded bg-black px-7 py-3 font-bold text-white transition hover:bg-black/80"
+              className="rounded bg-ink px-7 py-3 font-bold text-powder transition hover:bg-ink/80"
             >
               Időpontot foglalok
             </a>

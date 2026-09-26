@@ -21,7 +21,7 @@ const set = (sel: string, attr: string, val: string) => {
 /** Oldalankenti cim, leiras, megosztasi kep es VideoObject strukturalt adat. */
 export default function Seo({ title, description, image, video }: Props) {
   useEffect(() => {
-    const full = `${title} | KonyhaFlix`;
+    const full = `${title} | Konyhaszakértő Videótár`;
     document.title = full;
     if (description) {
       set('meta[name="description"]', "content", description);

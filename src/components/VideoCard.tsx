@@ -41,7 +41,7 @@ export default function VideoCard({ video, rowIds, source, vertical, archive }: 
           vertical ? "aspect-[9/16]" : "aspect-video"
         } ${archive && !hover ? "sepia-[.25]" : ""}`}
       >
-        <img src={thumb(video.id)} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+        <img src={thumb(video.id)} alt="" loading="lazy" className="kf-thumb absolute inset-0 h-full w-full object-cover" />
 
         {hover && (
           <iframe
@@ -62,7 +62,7 @@ export default function VideoCard({ video, rowIds, source, vertical, archive }: 
           </span>
         )}
         {episodeLabel(video) && (
-          <span className="absolute left-2 top-2 z-10 rounded bg-primary px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
+          <span className="absolute left-2 top-2 z-10 rounded bg-primary px-1.5 py-0.5 text-[10px] font-bold uppercase text-primary-foreground">
             {episodeLabel(video)}
           </span>
         )}

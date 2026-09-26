@@ -50,7 +50,7 @@ export default function Row({ id, title, description, intro, href, items, vertic
         )}
         <h2 className={`font-bold md:text-2xl ${archive ? "text-2xl text-amber-100 md:text-3xl" : "text-lg text-white"}`}>
           {href ? (
-            <Link to={href} className="transition hover:text-primary">
+            <Link to={href} className="transition hover:text-accent">
               {title}
               <span className="ml-2 text-sm font-normal text-white/50">Mind</span>
             </Link>

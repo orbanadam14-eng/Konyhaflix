@@ -31,7 +31,7 @@ export default function VideoPage({ modal }: { modal?: boolean }) {
     return (
       <div className="px-4 pt-32 text-center text-white/70 md:px-12">
         <p className="mb-4">Ez a videó nincs meg.</p>
-        <Link to="/" className="text-primary underline">
+        <Link to="/" className="text-accent underline">
           Vissza a kezdőlapra
         </Link>
       </div>
@@ -70,7 +70,7 @@ export default function VideoPage({ modal }: { modal?: boolean }) {
         {video.series && (
           <p className="mb-3 text-sm text-white/60">
             {episodeLabel(video) ? `${episodeLabel(video)}, ` : ""}
-            <Link to={`/sorozat/${video.series}`} className="text-primary hover:underline">
+            <Link to={`/sorozat/${video.series}`} className="text-accent hover:underline">
               {SERIES[video.series]}
             </Link>
             {eps.length > 1 && ` (${eps.length} rész)`}
@@ -100,7 +100,7 @@ export default function VideoPage({ modal }: { modal?: boolean }) {
             target="_blank"
             rel="noreferrer"
             onClick={() => track("cta_click", { place: "player", video_id: video.id })}
-            className="inline-block whitespace-nowrap rounded bg-primary px-5 py-2.5 text-sm font-bold text-white transition hover:bg-primary/85"
+            className="inline-block whitespace-nowrap rounded bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground transition hover:brightness-110"
           >
             Konyhatúra időpont
           </a>

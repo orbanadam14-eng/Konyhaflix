@@ -9,8 +9,13 @@
   :root {
     --background: 0 0% 8%;
     --foreground: 0 0% 100%;
-    --primary: 357 92% 47%;
-    --primary-foreground: 0 0% 100%;
+    /* Arculat a Konyha Mester oldalrol: terrakotta fo szin, pudervilagos szoveg rajta. */
+    --primary: 14 44% 43%;
+    --primary-foreground: 39 44% 93%;
+    --powder: 39 44% 93%;
+    --ink: 65 19% 13%;
+    /* Bronz kiemeles sotet hatteren. A terrakotta kis szovegnek tul sotet ide. */
+    --accent: 30 43% 72%;
     --muted: 0 0% 20%;
     --muted-foreground: 0 0% 70%;
     --border: 0 0% 20%;
@@ -19,12 +24,21 @@
   * { border-color: hsl(var(--border)); }
   body { @apply bg-background text-foreground antialiased; }
   h1, h2, h3 { text-wrap: balance; }
+  h1, h2 { @apply font-display; }
 }
 
 @layer utilities {
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .hide-scrollbar::-webkit-scrollbar { display: none; }
 }
+
+/* Videokartya kepe: enyhe pasztell tonus, hoverre elesedik. */
+.kf-thumb {
+  filter: saturate(0.72) contrast(0.9) brightness(1.06) sepia(0.12);
+  transition: filter 400ms ease;
+}
+.group\/card:hover .kf-thumb,
+.group\/card:focus-visible .kf-thumb { filter: none; }
 
 /* A lejatszo bevezeto animacioja. Rovid, mert a nezesbol vesz el. */
 @keyframes kfFade { 0%, 62% { opacity: 1; } 100% { opacity: 0; } }
