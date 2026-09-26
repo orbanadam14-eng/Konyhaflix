@@ -4,6 +4,10 @@ import { videos, byTopic, bySeries, TOPICS, SERIES, type Video } from "../data/v
 import VideoCard from "../components/VideoCard";
 import Seo from "../components/Seo";
 import { track } from "../lib/track";
+import { rows } from "../data/rows";
+import { DEFAULT_IMAGE, itemListLd, videoImage } from "../lib/seo";
+
+const cover = (items: Video[]) => (items[0] ? videoImage(items[0]) : DEFAULT_IMAGE);
 
 function Grid({ items, source }: { items: Video[]; source: string }) {
   const ids = items.map((v) => v.id);
@@ -32,9 +36,18 @@ export function TopicPage() {
   const { slug = "" } = useParams();
   const items = useMemo(() => byTopic(slug), [slug]);
   const name = TOPICS[slug] ?? "Téma";
+  const path = `/tema/${slug}`;
   return (
     <>
-      <Seo title={name} description={`${items.length} videó ehhez: ${name}. Konyhaszakértő videótár.`} />
+      <Seo
+        title={name}
+        description={`${items.length} videó ebben a témában: ${name}. Konyhák, gépek, méretek a Konyhaszakértőtől, 1994 óta.`}
+        path={path}
+        image={cover(items)}
+        noindex={!TOPICS[slug]}
+        crumbs={[{ name, path }]}
+        ld={[itemListLd(name, items)]}
+      />
       <Shell title={name} lead={`${items.length} videó.`}>
         {items.length ? <Grid items={items} source={`tema:${slug}`} /> : <Empty />}
       </Shell>
@@ -46,9 +59,19 @@ export function SeriesPage() {
   const { slug = "" } = useParams();
   const items = useMemo(() => bySeries(slug), [slug]);
   const name = SERIES[slug] ?? "Sorozat";
+  const path = `/sorozat/${slug}`;
+  const blurb = rows.find((r) => r.href === path)?.description;
   return (
     <>
-      <Seo title={name} description={`${items.length} rész. Konyhaszakértő videótár.`} />
+      <Seo
+        title={name}
+        description={`${name}: ${items.length} rész a Konyhaszakértő videótárában.${blurb ? ` ${blurb}` : ""}`}
+        path={path}
+        image={cover(items)}
+        noindex={!SERIES[slug]}
+        crumbs={[{ name, path }]}
+        ld={[itemListLd(name, items)]}
+      />
       <Shell title={name} lead={`${items.length} rész. Nézd sorban, minden rész épít az előzőre.`}>
         {items.length ? <Grid items={items} source={`sorozat:${slug}`} /> : <Empty />}
       </Shell>
@@ -73,7 +96,7 @@ export function SearchPage() {
 
   return (
     <>
-      <Seo title={q ? `Keresés: ${q}` : "Keresés"} />
+      <Seo title={q ? `Keresés: ${q}` : "Keresés"} path="/kereses" noindex />
       <Shell title={q ? `"${q}"` : "Keresés"} lead={q ? `${items.length} találat.` : "Írd be, mi érdekel."}>
         {items.length ? <Grid items={items} source="kereses" /> : q ? <Empty /> : null}
       </Shell>

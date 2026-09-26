@@ -1,6 +1,8 @@
-import { outbound, track } from "../lib/track";
+import { track } from "../lib/track";
+import { useOutbound } from "../lib/hydrated";
 
 export default function Footer() {
+  const tura = useOutbound("https://konyhatura.konyhaszakerto.hu");
   return (
     <footer className="mt-16 bg-[#111] px-4 py-12 text-sm text-white/55 md:px-12">
       <div className="mx-auto max-w-5xl">
@@ -12,7 +14,7 @@ export default function Footer() {
             Fél óra a budaörsi bemutatóteremben. Megnézed a fiókokat, kipróbálod a magasságokat, kérdezel.
           </p>
           <a
-            href={outbound("https://konyhatura.konyhaszakerto.hu")}
+            href={tura}
             target="_blank"
             rel="noreferrer"
             onClick={() => track("cta_click", { place: "footer" })}

@@ -1,63 +1,38 @@
-import { useEffect } from "react";
+import { createContext, useContext, useEffect, useRef } from "react";
+import { applyHead, type Meta } from "../lib/seo";
 
-interface Props {
-  title: string;
-  description?: string;
-  image?: string;
-  video?: { id: string; duration: number; slug: string };
-}
+/** Elorendereleskor ide gyujtjuk az oldal fejlecet. A bongeszoben nincs ilyen, ott null. */
+export const HeadContext = createContext<{ meta?: Meta } | null>(null);
 
-const set = (sel: string, attr: string, val: string) => {
-  let el = document.head.querySelector(sel) as HTMLMetaElement | null;
-  if (!el) {
-    el = document.createElement("meta");
-    const [k, v] = sel.replace(/[[\]"']/g, "").split("meta")[1].split("=");
-    el.setAttribute(k, v);
-    document.head.appendChild(el);
-  }
-  el.setAttribute(attr, val);
+// A modalis lejatszo alatt a hatteroldal is mountolva marad. Mindig a legfelso Seo ervenyes,
+// es ha az eltunik (bezarjuk a modalt), az alatta levo visszaallitja a sajat fejlecet.
+type Entry = { meta?: Meta };
+const stack: Entry[] = [];
+const applyTop = () => {
+  const top = [...stack].reverse().find((e) => e.meta);
+  if (top?.meta) applyHead(top.meta);
 };
 
-/** Oldalankenti cim, leiras, megosztasi kep es VideoObject strukturalt adat. */
-export default function Seo({ title, description, image, video }: Props) {
-  useEffect(() => {
-    const full = `${title} | Konyhaszakértő Videótár`;
-    document.title = full;
-    if (description) {
-      set('meta[name="description"]', "content", description);
-      set('meta[property="og:description"]', "content", description);
-    }
-    set('meta[property="og:title"]', "content", full);
-    set('meta[property="og:type"]', "content", video ? "video.other" : "website");
-    set('meta[property="og:url"]', "content", window.location.href);
-    if (image) {
-      set('meta[property="og:image"]', "content", image);
-      set('meta[name="twitter:image"]', "content", image);
-    }
+/** Oldalankenti cim, leiras, canonical, megosztasi kep es JSON-LD. */
+export default function Seo(props: Meta) {
+  const ctx = useContext(HeadContext);
+  if (ctx) ctx.meta = props;
 
-    let ld = document.getElementById("kf-ld") as HTMLScriptElement | null;
-    if (video) {
-      if (!ld) {
-        ld = document.createElement("script");
-        ld.id = "kf-ld";
-        ld.type = "application/ld+json";
-        document.head.appendChild(ld);
-      }
-      ld.textContent = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "VideoObject",
-        name: title,
-        description,
-        thumbnailUrl: `https://i.ytimg.com/vi/${video.id}/maxresdefault.jpg`,
-        duration: `PT${Math.floor(video.duration / 60)}M${video.duration % 60}S`,
-        embedUrl: `https://www.youtube.com/embed/${video.id}`,
-        uploadDate: "2024-01-01",
-        publisher: { "@type": "Organization", name: "Konyhaszakértő" },
-      });
-    } else if (ld) {
-      ld.remove();
-    }
-  }, [title, description, image, video]);
+  const entry = useRef<Entry>({});
+  useEffect(() => {
+    const e = entry.current;
+    stack.push(e);
+    return () => {
+      stack.splice(stack.indexOf(e), 1);
+      applyTop();
+    };
+  }, []);
+
+  const key = JSON.stringify(props);
+  useEffect(() => {
+    entry.current.meta = JSON.parse(key) as Meta;
+    applyTop();
+  }, [key]);
 
   return null;
 }
