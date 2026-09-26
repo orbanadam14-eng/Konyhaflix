@@ -1,4 +1,4 @@
-// Build-ideju elorenderelés. A vite build utan fut:
+// Build-ideju elorenderelés. A vite build vegen fut (vite.config.ts, videotar-prerender plugin):
 // 1. minden utvonalhoz statikus HTML a dist-be (video/<slug>.html stb.), benne a teljes tartalommal es fejleccel,
 // 2. spa.html: ures vaz a nem elorenderelt utvonalaknak (pl. /kereses), a vercel.json erre esik vissza,
 // 3. sitemap.xml es llms.txt ugyanabbol az adatbol.
@@ -96,4 +96,31 @@ ${popular.join("\n")}
 if (llms.includes("\u2014")) throw new Error("prerender: hosszu gondolatjel az llms.txt-ben");
 await fs.writeFile(path.join(dist, "llms.txt"), llms);
 
-console.log(`prerender: ${count} oldal, ${indexable.length} a sitemapben, spa.html, llms.txt kesz.`);
+// Vegso ellenorzes a kesz kimeneten. Ha barmi hianyzik, a build bukjon el, ne menjen ki fel oldal.
+const fail = (msg) => {
+  throw new Error(`prerender ellenorzes: ${msg}`);
+};
+const read = async (f) => fs.readFile(path.join(dist, f), "utf8").catch(() => fail(`hianyzik: ${f}`));
+
+const spa = await read("spa.html");
+if (!spa.includes(ROOT_DIV)) fail("a spa.html #root eleme nem ures");
+if (/id="kf-ld"/.test(spa)) fail("a spa.html-ben oldalfuggo JSON-LD van");
+
+const sm = await read("sitemap.xml");
+const locs = (sm.match(/<loc>/g) ?? []).length;
+if (locs !== indexable.length || locs < 10) fail(`sitemap.xml: ${locs} URL, varhato ${indexable.length}`);
+
+const lt = await read("llms.txt");
+if (!lt.startsWith(`# ${SITE_NAME}`) || !lt.includes("## Sorozatok")) fail("llms.txt tartalma hianyos");
+await read("robots.txt");
+
+const all = routes();
+for (const url of all) {
+  const f = url === "/" ? "index.html" : `${url.slice(1)}.html`;
+  const s = await read(f);
+  if (s.includes(ROOT_DIV)) fail(`ures #root: ${f}`);
+  if (!s.includes('id="kf-ld"') || !s.includes('rel="canonical"')) fail(`hianyzo fejlec: ${f}`);
+}
+if (count !== all.length || all.length < 100) fail(`${count} oldal keszult, varhato ${all.length}`);
+
+console.log(`prerender: ${count} oldal, ${indexable.length} a sitemapben, spa.html, llms.txt kesz, ellenorizve.`);
