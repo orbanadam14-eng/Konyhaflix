@@ -4,6 +4,7 @@ import { Play } from "lucide-react";
 import { episodeLabel, type Video } from "../data/videos";
 import { thumb, fmt } from "../lib/yt";
 import { percent } from "../lib/progress";
+import { useHydrated } from "../lib/hydrated";
 
 interface Props {
   video: Video;
@@ -17,7 +18,8 @@ export default function VideoCard({ video, rowIds, source, vertical, archive }: 
   const loc = useLocation();
   const [hover, setHover] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const p = percent(video.id);
+  // A haladas a bongeszoben van, ezert csak hidratalas utan rajzoljuk ki.
+  const p = useHydrated() ? percent(video.id) : 0;
 
   // Kesleltetett elonezet, hogy a soron atgorgetve ne induljon el tiz lejatszo.
   const enter = () => {

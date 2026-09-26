@@ -5,9 +5,12 @@ import { shorts, TOPICS } from "../data/videos";
 import { thumb } from "../lib/yt";
 import { track, markWatched } from "../lib/track";
 import { reportWatch } from "../lib/ghl";
+import { useHydrated } from "../lib/hydrated";
 import Seo from "../components/Seo";
+import { itemListLd } from "../lib/seo";
 
 const KEY = "kf_shorts_pos";
+const savedPos = () => Number(localStorage.getItem(KEY) || 0);
 
 /** Fuggoleges, magatol tovabblepo rovidvideo-folyam. A sorrend a mienk, nem a YouTube-e. */
 export default function ShortsPage() {
@@ -24,10 +27,15 @@ export default function ShortsPage() {
   }, []);
 
   const box = useRef<HTMLDivElement>(null);
-  const [idx, setIdx] = useState(() => Number(localStorage.getItem(KEY) || 0));
+  // Elorenderelt oldalon a hidratalas meg a 0. poziciot rajzolja, mint a szerver.
+  // A mentett pozicio csak utana jon, es a meres is csak onnan indul.
+  const hydrated = useHydrated();
+  const [pos, setIdx] = useState<number | null>(null);
+  const idx = pos ?? (hydrated ? savedPos() : 0);
   const [muted, setMuted] = useState(true);
 
   useEffect(() => {
+    if (!hydrated) return;
     localStorage.setItem(KEY, String(idx));
     const v = list[idx];
     if (v) {
@@ -35,7 +43,7 @@ export default function ShortsPage() {
       markWatched(v.id);
       reportWatch(v.id, v.title);
     }
-  }, [idx, list]);
+  }, [idx, list, hydrated]);
 
   useEffect(() => {
     const el = box.current;
@@ -62,7 +70,13 @@ export default function ShortsPage() {
 
   return (
     <>
-      <Seo title="Gyors válaszok egy percben" description={`${list.length} rövid videó a konyháról. Egy kérdés, egy válasz.`} />
+      <Seo
+        title="Gyors válaszok egy percben"
+        description={`${list.length} rövid videó a konyháról. Egy kérdés, egy válasz.`}
+        path="/shorts"
+        crumbs={[{ name: "Rövid videók", path: "/shorts" }]}
+        ld={[itemListLd("Rövid videók", list)]}
+      />
       <div
         ref={box}
         className="hide-scrollbar h-[100dvh] snap-y snap-mandatory overflow-y-scroll bg-black"

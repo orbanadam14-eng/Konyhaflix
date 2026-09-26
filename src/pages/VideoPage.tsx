@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { bySlug, TOPICS, SERIES, bySeries, episodeLabel, type Video } from "../data/videos";
 import { buildQueue, related } from "../lib/queue";
-import { outbound, track } from "../lib/track";
-import { thumbHi } from "../lib/yt";
+import { track } from "../lib/track";
+import { useOutbound } from "../lib/hydrated";
+import { isUntitled, videoImage, videoLd, videoPath, videoSummary } from "../lib/seo";
 import Player from "../components/Player";
 import Row from "../components/Row";
 import Seo from "../components/Seo";
@@ -17,6 +18,7 @@ export default function VideoPage({ modal }: { modal?: boolean }) {
   const st = (loc.state ?? {}) as Nav;
 
   const [video, setVideo] = useState<Video | undefined>(() => bySlug(slug ?? ""));
+  const tura = useOutbound("https://konyhatura.konyhaszakerto.hu");
 
   useEffect(() => {
     const v = bySlug(slug ?? "");
@@ -30,6 +32,7 @@ export default function VideoPage({ modal }: { modal?: boolean }) {
   if (!video) {
     return (
       <div className="px-4 pt-32 text-center text-white/70 md:px-12">
+        <Seo title="Ez a videó nincs meg" path={`/video/${slug ?? ""}`} noindex />
         <p className="mb-4">Ez a videó nincs meg.</p>
         <Link to="/" className="text-accent underline">
           Vissza a kezdőlapra
@@ -50,9 +53,20 @@ export default function VideoPage({ modal }: { modal?: boolean }) {
     <>
       <Seo
         title={video.title}
-        description={video.description || `${video.title}. Konyhaszakértő, 1994 óta.`}
-        image={thumbHi(video.id)}
-        video={{ id: video.id, duration: video.duration, slug: video.slug }}
+        description={videoSummary(video)}
+        path={videoPath(video)}
+        image={videoImage(video)}
+        type="video.other"
+        noindex={isUntitled(video)}
+        crumbs={[
+          ...(video.series && SERIES[video.series]
+            ? [{ name: SERIES[video.series], path: `/sorozat/${video.series}` }]
+            : TOPICS[video.topics[0]]
+            ? [{ name: TOPICS[video.topics[0]], path: `/tema/${video.topics[0]}` }]
+            : []),
+          { name: video.title, path: videoPath(video) },
+        ]}
+        ld={[videoLd(video)]}
       />
 
       <Player
@@ -96,7 +110,7 @@ export default function VideoPage({ modal }: { modal?: boolean }) {
             Ha a saját konyhádról szeretnél beszélni, gyere el hozzánk Budaörsre. Fél óra, kötelezettség nélkül.
           </p>
           <a
-            href={outbound("https://konyhatura.konyhaszakerto.hu")}
+            href={tura}
             target="_blank"
             rel="noreferrer"
             onClick={() => track("cta_click", { place: "player", video_id: video.id })}

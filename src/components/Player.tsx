@@ -28,12 +28,13 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
   const [cancelled, setCancelled] = useState(false);
   const [resume, setResume] = useState(0);
   // A Videotar bevezeto csak az elso inditasnal fut le, hogy ne lassitsa a tovabblepest.
-  const [intro, setIntro] = useState(() => {
-    if (typeof window === "undefined") return false;
-    if (sessionStorage.getItem("kf_intro")) return false;
+  // Effektben dontjuk el, mert az elorenderelt HTML-ben meg nincs sessionStorage.
+  const [intro, setIntro] = useState(false);
+  useEffect(() => {
+    if (sessionStorage.getItem("kf_intro")) return;
     sessionStorage.setItem("kf_intro", "1");
-    return true;
-  });
+    setIntro(true);
+  }, []);
   const marks = useRef<Set<number>>(new Set());
 
   const next = queue[0];

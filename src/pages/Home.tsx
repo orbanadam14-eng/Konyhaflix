@@ -5,7 +5,9 @@ import { mainRows, shortsRows, archiveRow } from "../data/rows";
 import { videos, byId, type Video } from "../data/videos";
 import { continueList } from "../lib/progress";
 import { thumbHi } from "../lib/yt";
-import { outbound, track } from "../lib/track";
+import { track } from "../lib/track";
+import { useOutbound } from "../lib/hydrated";
+import { organizationLd, websiteLd } from "../lib/seo";
 import HeroVideo from "../components/HeroVideo";
 import { LOGO_SZAKERTO } from "../lib/brand";
 import Row from "../components/Row";
@@ -20,6 +22,7 @@ export default function Home() {
   const loc = useLocation();
   const [cont, setCont] = useState<Video[]>([]);
   const [bg, setBg] = useState(false);
+  const tura = useOutbound(TURA);
 
   const hero = byId(HERO_ID) || videos.find((v) => v.type === "long" && !v.vintage) || videos[0];
 
@@ -41,7 +44,8 @@ export default function Home() {
       <Seo
         title="Minden konyhás videónk egy helyen"
         description="Konyhák, gépek, méretek, hibák. Több mint 190 videó a Konyhaszakértőtől, 1994 óta. Indíts el egyet, a következőt már betesszük."
-        image={thumbHi(hero.id)}
+        path="/"
+        ld={[organizationLd, websiteLd]}
       />
 
       <section className="relative flex h-[80vh] min-h-[540px] items-center overflow-hidden px-4 md:px-12">
@@ -111,7 +115,7 @@ export default function Home() {
                   Ami a videón jól néz ki, azt élőben meg is tapinthatod.
                 </h2>
                 <a
-                  href={outbound(TURA)}
+                  href={tura}
                   target="_blank"
                   rel="noreferrer"
                   onClick={() => track("cta_click", { place: "mid" })}
@@ -190,7 +194,7 @@ export default function Home() {
               Fél óra a budaörsi bemutatóteremben: rejtett tárolók, ergonómia, anyagok élőben.
             </p>
             <a
-              href={outbound(TURA)}
+              href={tura}
               target="_blank"
               rel="noreferrer"
               onClick={() => track("cta_click", { place: "home-end" })}

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import { outbound, track } from "../lib/track";
+import { track } from "../lib/track";
+import { useOutbound } from "../lib/hydrated";
 import Wordmark from "./Wordmark";
 
 const TURA = "https://konyhatura.konyhaszakerto.hu";
@@ -19,6 +20,7 @@ export default function Header() {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [solid, setSolid] = useState(false);
+  const tura = useOutbound(TURA);
 
   useEffect(() => {
     const h = () => setSolid(window.scrollY > 60);
@@ -73,7 +75,7 @@ export default function Header() {
         </form>
 
         <a
-          href={outbound(TURA)}
+          href={tura}
           target="_blank"
           rel="noreferrer"
           onClick={() => track("cta_click", { place: "header" })}
