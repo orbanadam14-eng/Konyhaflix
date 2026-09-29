@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { bySlug, TOPICS, SERIES, bySeries, episodeLabel, type Video } from "../data/videos";
+import { bySlug, TURA_VIDEO_ID, TOPICS, SERIES, bySeries, episodeLabel, type Video } from "../data/videos";
 import { buildQueue, related } from "../lib/queue";
 import { track } from "../lib/track";
 import { useOutbound } from "../lib/hydrated";
 import { isUntitled, videoImage, videoLd, videoPath, videoSummary } from "../lib/seo";
 import Player from "../components/Player";
 import Row from "../components/Row";
+import TuraVideo from "../components/TuraVideo";
 import Seo from "../components/Seo";
 
 interface Nav { rowIds?: string[]; source?: string; backgroundLocation?: unknown }
@@ -119,6 +120,7 @@ export default function VideoPage({ modal }: { modal?: boolean }) {
             Konyhatúra időpont
           </a>
         </div>
+        {video.id !== TURA_VIDEO_ID && <TuraVideo place="player" className="-mt-5 mb-8 sm:max-w-md" />}
       </div>
 
       <div className="pb-8">

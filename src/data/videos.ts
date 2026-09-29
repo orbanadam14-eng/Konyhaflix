@@ -31,7 +31,11 @@ export const TOPICS: Record<string, string> = {
   "kesz-konyha": "Csak nézelődöm",
   "vilagitas": "Fény és konnektor",
   "mosogato": "A mosogató körül",
+  "tura": "Mielőtt eljössz a konyhatúrára",
 };
+
+/** Viktor videója a túra előtti tudnivalókról. A túra CTA-k mellett kiemelve jelenik meg. */
+export const TURA_VIDEO_ID = "AkA0UgseI3A";
 
 export const SERIES: Record<string, string> = {
   "konyharol-konyhara": "Konyháról konyhára, a podcast",
@@ -260,7 +264,8 @@ const RAW: Raw[] = [
 ["e4xneP0rPcs","Hogyan választana lakberendezőt a Konyhaszakértő?",45,1,"atalakitas",284,"",0],
 ["Xlw15IOWNlk","Rossz adottságok? Nem baj, megoldjuk!",22,1,"hibak",256,"",0],
 ["QqrdPH9BzCc","A villanyszerelő megmondta. Szakemberek ellentmondásban?",79,1,"kivitelezes",179,"",0],
-["r8CnDLMLqYc","Esztétika vs praktikum",107,1,"kesz-konyha",98,"",0]
+["r8CnDLMLqYc","Esztétika vs praktikum",107,1,"kesz-konyha",98,"",0],
+["AkA0UgseI3A","Mit hozz magaddal a konyhatúrára?",56,1,"tura",0,"",0]
 ];
 
 export const videos: Video[] = RAW.map(([id, title, duration, t, topics, views, series, episode]) => ({

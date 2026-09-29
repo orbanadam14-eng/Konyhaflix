@@ -11,6 +11,7 @@ import { organizationLd, websiteLd } from "../lib/seo";
 import HeroVideo from "../components/HeroVideo";
 import { LOGO_SZAKERTO } from "../lib/brand";
 import Row from "../components/Row";
+import TuraVideo from "../components/TuraVideo";
 import Seo from "../components/Seo";
 
 // Friss, latvanyos videó. Regi anyag SOHA ne kerüljön a heróba.
@@ -123,6 +124,7 @@ export default function Home() {
                 >
                   Ingyenes konyhatúra időpontot kérek
                 </a>
+                <TuraVideo place="mid" className="mx-auto mt-6 max-w-sm" />
               </section>
             )}
           </Fragment>
@@ -142,7 +144,7 @@ export default function Home() {
                 onClick={() => track("cta_click", { place: "shorts-band" })}
                 className="mt-4 inline-flex items-center gap-2 rounded bg-white/10 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-white/20"
               >
-                <Zap className="h-4 w-4" /> Mind a 67 rövid videó, folyamatban
+                <Zap className="h-4 w-4" /> Mind a {videos.filter((v) => v.type === "short").length} rövid videó, folyamatban
               </Link>
             </div>
 
@@ -193,6 +195,7 @@ export default function Home() {
             <p className="mb-6 flex-grow text-sm text-primary-foreground/90 md:text-base">
               Fél óra a budaörsi bemutatóteremben: rejtett tárolók, ergonómia, anyagok élőben.
             </p>
+            <TuraVideo place="home-end" tone="light" className="mb-6 w-full" />
             <a
               href={tura}
               target="_blank"
