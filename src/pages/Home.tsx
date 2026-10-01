@@ -48,7 +48,7 @@ export default function Home() {
         ld={[organizationLd, websiteLd]}
       />
 
-      <section className="relative flex h-[80vh] min-h-[540px] items-center overflow-hidden px-4 md:px-12">
+      <section className="relative flex min-h-[80vh] items-center overflow-hidden px-4 pb-28 pt-20 md:min-h-[640px] md:px-12">
         <div className="absolute inset-0 z-0 bg-black">
           <img src={thumbHi(hero.id)} alt="" className="h-full w-full object-cover opacity-70" />
           {bg && <HeroVideo id={HERO_ID} start={HERO_START} />}
@@ -56,7 +56,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         </div>
 
-        <div className="kf-rise relative z-10 mt-16 max-w-2xl">
+        <div className="kf-rise relative z-10 max-w-2xl">
           <h1 className="mb-5">
             <img
               src={LOGO_SZAKERTO}
