@@ -89,7 +89,7 @@ export default function Kerdoiv() {
     return (
       <div className="mx-auto max-w-xl px-4 pb-20 pt-28 text-center">
         <Seo title="Köszönjük" path="/kerdoiv" noindex />
-        <h1 className="mb-3 text-2xl font-bold text-white md:text-3xl">Köszönjük, így már a te konyhádra készülünk.</h1>
+        <h1 className="mb-3 text-2xl font-bold text-white md:text-3xl">Köszönjük, így már a te konyhádra készülünk</h1>
         <p className="mb-8 text-white/60">Addig is ezt neked válogattuk:</p>
         <Link
           to={sug.href}

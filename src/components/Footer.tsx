@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="mx-auto max-w-5xl">
         <div className="mb-10 rounded border border-white/10 bg-[#181818] p-8 text-center">
           <h2 className="mx-auto mb-4 max-w-xl text-xl font-bold text-white md:text-2xl">
-            Ami a videón jól néz ki, azt élőben meg is tapinthatod.
+            Ami a videón jól néz ki, azt élőben meg is tapinthatod
           </h2>
           <p className="mx-auto mb-6 max-w-lg text-white/60">
             Fél óra a budaörsi bemutatóteremben. Megnézed a fiókokat, kipróbálod a magasságokat, kérdezel.
