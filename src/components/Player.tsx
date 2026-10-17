@@ -40,11 +40,14 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
   const [needSound, setNeedSound] = useState(false);
   const startTok = useRef(0);
   const blockTimer = useRef<number | null>(null);
+  const ready = useRef(false);
   const fallback = useRef<(() => void) | null>(null);
   // Az aktualis video azonositoja az esemenykezelokhoz, es az, amit a lejatszo most tolt.
   const currentId = useRef(video.id);
   const currentTitle = useRef(video.title);
   const loadedId = useRef(video.id);
+  const currentSource = useRef(source);
+  currentSource.current = source;
 
   const next = queue[0];
   const alts = queue.slice(1, 4);
@@ -69,18 +72,22 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
       safe(p, "playVideo");
       setNeedSound(true);
     };
-    let tries = 0;
+    // Toleransabb ellenorzes: -1 / 5 / 3 "meg indul" ~3 mp-ig. Csak akkor nemitunk,
+    // ha onAutoplayBlocked jott, vagy 3 mp utan is -1 / 5 az allapot. A hosszu
+    // BUFFERING halozati gond, nem bongeszo-tiltas: azt nem nemitjuk.
+    const t0 = Date.now();
     const check = () => {
       if (tok !== startTok.current || !PS) return;
       const st = safe(p, "getPlayerState");
       if (st === PS.PLAYING || st === PS.PAUSED || st === PS.ENDED) return;
-      if (st === PS.BUFFERING && tries++ < 3) {
-        blockTimer.current = window.setTimeout(check, 800);
+      const waited = Date.now() - t0;
+      if (waited >= 3000 && st !== PS.BUFFERING) {
+        muteFallback();
         return;
       }
-      muteFallback();
+      if (waited < 60000) blockTimer.current = window.setTimeout(check, 400);
     };
-    blockTimer.current = window.setTimeout(check, 1200);
+    blockTimer.current = window.setTimeout(check, 400);
     fallback.current = muteFallback;
   }, []);
 
@@ -98,6 +105,9 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
   const loadVideo = useCallback((id: string) => {
     if (loadedId.current === id) return;
     loadedId.current = id;
+    // Onready elott a metodus nem letezik: az onReady szinkronizal a loadedId-hez,
+    // es az inditas / hang-vizsgalat is csak onReady utan fut.
+    if (!ready.current) return;
     // A nemitott allapot atmegy a kovetkezo videora is: a gomb marad, amig nincs hang.
     setNeedSound(!sound.on && !!safe(player.current, "isMuted"));
     safe(player.current, "loadVideoById", id);
@@ -109,6 +119,7 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
       setEnded(false);
       setCancelled(false);
       setCount(COUNTDOWN);
+      setResume(0);
       marks.current = new Set();
       track("video_next", { from_video: video.id, to_video: v.id, how });
       loadVideo(v.id);
@@ -126,12 +137,21 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
     loadYT().then((YT) => {
       if (dead || !host.current || player.current) return;
       loadedId.current = currentId.current;
+      const createdId = loadedId.current;
       const inst = new YT.Player(host.current, {
         videoId: currentId.current,
         playerVars: PLAYER_VARS,
         events: {
           onReady: (e: any) => {
             if (dead) return;
+            ready.current = true;
+            // Ha onReady elott mas videora valtottunk, most vegre azt toltjuk be.
+            if (loadedId.current !== createdId) {
+              setResume(0);
+              safe(e.target, "loadVideoById", loadedId.current);
+              begin(e.target);
+              return;
+            }
             const r = resumeAt(loadedId.current);
             if (r) {
               setResume(r);
@@ -170,6 +190,7 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
       if (blockTimer.current) clearTimeout(blockTimer.current);
       teardownPlayer(player.current);
       player.current = null;
+      ready.current = false;
     };
     // szandekosan ures: a lejatszo egyszer jon letre (a begin stabil)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -187,8 +208,10 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
       setResume(0);
       loadVideo(video.id);
     }
-    track("video_start", { video_id: video.id, video_title: video.title, source });
-  }, [video.id, video.title, source, loadVideo]);
+    // A source a navigacioval egyutt valtozik, de egy rendernyivel a video elott: ezert
+    // ref-bol olvassuk, es csak video-valtasra tuzelunk (egyszer videonkent).
+    track("video_start", { video_id: video.id, video_title: video.title, source: currentSource.current });
+  }, [video.id, video.title, loadVideo]);
 
   // Haladas mentese es negyedelesi esemenyek.
   useEffect(() => {
