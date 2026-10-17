@@ -81,6 +81,9 @@ export function teardownPlayer(p: any) {
   unregisterPlayer(p);
 }
 
+/** Volt-e mar hang ebben az ulesben (felhasznaloi erintes vagy sikeres hangos inditas). */
+export const sound = { on: false };
+
 export const PLAYER_VARS = {
   autoplay: 1,
   // 2018 ota a rel=0 nem tunteti el a kapcsolodo videokat, hanem
