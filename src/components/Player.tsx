@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { X, Play, RotateCcw } from "lucide-react";
 import type { Video } from "../data/videos";
-import { loadYT, PLAYER_VARS, thumb, fmt } from "../lib/yt";
+import { loadYT, PLAYER_VARS, thumb, fmt, registerPlayer, unregisterPlayer, teardownPlayer, claimAudio, safe } from "../lib/yt";
 import { setProgress, resumeAt } from "../lib/progress";
 import { track, markWatched } from "../lib/track";
 import { reportWatch } from "../lib/ghl";
@@ -36,9 +36,20 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
     setIntro(true);
   }, []);
   const marks = useRef<Set<number>>(new Set());
+  // Az aktualis video azonositoja az esemenykezelokhoz, es az, amit a lejatszo most tolt.
+  const currentId = useRef(video.id);
+  const currentTitle = useRef(video.title);
+  const loadedId = useRef(video.id);
 
   const next = queue[0];
   const alts = queue.slice(1, 4);
+
+  /** Videocsere a meglevo lejatszoban (egy lejatszo, nincs tobb parhuzamos hang). */
+  const loadVideo = useCallback((id: string) => {
+    if (loadedId.current === id) return;
+    loadedId.current = id;
+    safe(player.current, "loadVideoById", id);
+  }, []);
 
   const goTo = useCallback(
     (v: Video, how: string) => {
@@ -47,23 +58,28 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
       setCount(COUNTDOWN);
       marks.current = new Set();
       track("video_next", { from_video: video.id, to_video: v.id, how });
-      if (player.current?.loadVideoById) player.current.loadVideoById(v.id);
+      loadVideo(v.id);
       onChange(v);
     },
-    [video.id, onChange]
+    [video.id, onChange, loadVideo]
   );
 
   // Lejatszo letrehozasa egyszer, utana csak videot cserelunk.
   useEffect(() => {
     let dead = false;
+    // Jelzo: a hero mar a lejatszo API betoltese elott megalljon, ne csak utana.
+    const token = {};
+    registerPlayer(token, true);
     loadYT().then((YT) => {
       if (dead || !host.current || player.current) return;
-      player.current = new YT.Player(host.current, {
-        videoId: video.id,
+      loadedId.current = currentId.current;
+      const inst = new YT.Player(host.current, {
+        videoId: currentId.current,
         playerVars: PLAYER_VARS,
         events: {
           onReady: (e: any) => {
-            const r = resumeAt(video.id);
+            if (dead) return;
+            const r = resumeAt(loadedId.current);
             if (r) {
               setResume(r);
               e.target.seekTo(r, true);
@@ -71,7 +87,9 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
             e.target.playVideo();
           },
           onStateChange: (e: any) => {
+            if (dead) return;
             const YTP = (window as any).YT.PlayerState;
+            if (e.data === YTP.PLAYING) claimAudio(inst);
             if (e.data === YTP.ENDED) {
               markWatched(currentId.current);
               track("video_complete", { video_id: currentId.current });
@@ -81,27 +99,33 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
           },
         },
       });
+      player.current = inst;
+      registerPlayer(inst, false);
     });
     return () => {
       dead = true;
-      try {
-        player.current?.destroy?.();
-      } catch { /* ures */ }
+      unregisterPlayer(token);
+      teardownPlayer(player.current);
       player.current = null;
     };
     // szandekosan ures: a lejatszo egyszer jon letre
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Az aktualis video azonositoja az esemenykezelokhoz.
-  const currentId = useRef(video.id);
-  const currentTitle = useRef(video.title);
   useEffect(() => {
     currentId.current = video.id;
     currentTitle.current = video.title;
     marks.current = new Set();
+    // Kulso valtas (pl. ajanlott kartya, vissza gomb): a lejatszo is kovesse az oldalt.
+    if (loadedId.current !== video.id) {
+      setEnded(false);
+      setCancelled(false);
+      setCount(COUNTDOWN);
+      setResume(0);
+      loadVideo(video.id);
+    }
     track("video_start", { video_id: video.id, video_title: video.title, source });
-  }, [video.id, video.title, source]);
+  }, [video.id, video.title, source, loadVideo]);
 
   // Haladas mentese es negyedelesi esemenyek.
   useEffect(() => {

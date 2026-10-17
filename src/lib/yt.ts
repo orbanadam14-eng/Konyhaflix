@@ -23,6 +23,64 @@ export function loadYT(): Promise<any> {
   return loading;
 }
 
+// ---- Lejatszo-nyilvantartas ----
+// Egyszerre egy lejatszo adhat hangot. A fo lejatszok (videooldal / modal) es a
+// hero hatter a kozos listaban vannak; aki hangot kap, a tobbit megallitja.
+// A hero kulon figyeli, van-e fo lejatszo: amig van, nem jatszik.
+const reg = new Set<any>();
+const mains = new Set<any>();
+const subs = new Set<() => void>();
+const notify = () => subs.forEach((f) => f());
+
+/** Biztonsagos hivas: a lejatszo metodusai csak onReady utan leteznek. */
+export function safe(p: any, fn: string, ...args: any[]) {
+  try {
+    if (p && typeof p[fn] === "function") return p[fn](...args);
+  } catch {
+    /* ures */
+  }
+  return undefined;
+}
+
+export function registerPlayer(p: any, main: boolean) {
+  reg.add(p);
+  if (main) {
+    mains.add(p);
+    notify();
+  }
+}
+
+export function unregisterPlayer(p: any) {
+  reg.delete(p);
+  if (mains.delete(p)) notify();
+}
+
+/** Aki elindul, megkapja a hangot: a tobbi regisztralt lejatszo megall. */
+export function claimAudio(p: any) {
+  reg.forEach((o) => {
+    if (o !== p) safe(o, "pauseVideo");
+  });
+}
+
+export const hasMainPlayer = () => mains.size > 0;
+
+/** A hero ide iratkozik fel: akkor hivodik, ha fo lejatszo jott vagy ment. */
+export function onMainChange(fn: () => void) {
+  subs.add(fn);
+  return () => {
+    subs.delete(fn);
+  };
+}
+
+/** Lejatszo leallitasa es lebontasa, onReady elotti allapotban is hibatlanul. */
+export function teardownPlayer(p: any) {
+  if (!p) return;
+  safe(p, "pauseVideo");
+  safe(p, "stopVideo");
+  safe(p, "destroy");
+  unregisterPlayer(p);
+}
+
 export const PLAYER_VARS = {
   autoplay: 1,
   // 2018 ota a rel=0 nem tunteti el a kapcsolodo videokat, hanem

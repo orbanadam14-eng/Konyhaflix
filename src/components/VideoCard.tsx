@@ -16,6 +16,11 @@ interface Props {
 
 export default function VideoCard({ video, rowIds, source, vertical, archive }: Props) {
   const loc = useLocation();
+  // Ha mar videooldalon / modalban vagyunk, a hatter marad az eredeti oldal. Kulonben a
+  // videooldal sajat maga mogott is kirajzolna egy masodik lejatszot.
+  const inVideo = loc.pathname.startsWith("/video/");
+  const bgLoc = (loc.state as { backgroundLocation?: unknown } | null)?.backgroundLocation;
+  const state = inVideo ? (bgLoc ? { backgroundLocation: bgLoc, rowIds, source } : { rowIds, source }) : { backgroundLocation: loc, rowIds, source };
   const [hover, setHover] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // A haladas a bongeszoben van, ezert csak hidratalas utan rajzoljuk ki.
@@ -33,7 +38,8 @@ export default function VideoCard({ video, rowIds, source, vertical, archive }: 
   return (
     <Link
       to={`/video/${video.slug}`}
-      state={{ backgroundLocation: loc, rowIds, source }}
+      state={state}
+      replace={inVideo && !!bgLoc}
       onMouseEnter={enter}
       onMouseLeave={leave}
       className={`group/card relative block shrink-0 snap-start ${vertical ? "kf-card-v" : "kf-card"}`}
