@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState, useCallback } from "react";
-import { X, Play, RotateCcw } from "lucide-react";
+import { X, Play, RotateCcw, Volume2 } from "lucide-react";
 import type { Video } from "../data/videos";
-import { loadYT, PLAYER_VARS, thumb, fmt, registerPlayer, unregisterPlayer, teardownPlayer, claimAudio, safe } from "../lib/yt";
+import { loadYT, PLAYER_VARS, thumb, fmt, registerPlayer, unregisterPlayer, teardownPlayer, claimAudio, safe, sound } from "../lib/yt";
 import { setProgress, resumeAt } from "../lib/progress";
 import { track, markWatched } from "../lib/track";
 import { reportWatch } from "../lib/ghl";
@@ -36,6 +36,11 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
     setIntro(true);
   }, []);
   const marks = useRef<Set<number>>(new Set());
+  // Hang nelkul indult (a bongeszo letiltotta a hangos automatikus inditast): gomb kell.
+  const [needSound, setNeedSound] = useState(false);
+  const startTok = useRef(0);
+  const blockTimer = useRef<number | null>(null);
+  const fallback = useRef<(() => void) | null>(null);
   // Az aktualis video azonositoja az esemenykezelokhoz, es az, amit a lejatszo most tolt.
   const currentId = useRef(video.id);
   const currentTitle = useRef(video.title);
@@ -44,12 +49,60 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
   const next = queue[0];
   const alts = queue.slice(1, 4);
 
+  /**
+   * Inditas: hangosan probaljuk. Ha a bongeszo nem engedi (a lejatszo nem indul el
+   * ~1,2 mp alatt, vagy onAutoplayBlocked), nemitva elinditjuk es kirakjuk a
+   * "Hang bekapcsolasa" gombot. Ha mar volt hang az uleseben, a kovetkezo video is hangos.
+   */
+  const begin = useCallback((p: any) => {
+    const tok = ++startTok.current;
+    if (blockTimer.current) clearTimeout(blockTimer.current);
+    const PS = (window as any).YT?.PlayerState;
+    if (sound.on) {
+      safe(p, "unMute");
+      safe(p, "setVolume", 100);
+    }
+    safe(p, "playVideo");
+    const muteFallback = () => {
+      if (tok !== startTok.current) return;
+      safe(p, "mute");
+      safe(p, "playVideo");
+      setNeedSound(true);
+    };
+    let tries = 0;
+    const check = () => {
+      if (tok !== startTok.current || !PS) return;
+      const st = safe(p, "getPlayerState");
+      if (st === PS.PLAYING || st === PS.PAUSED || st === PS.ENDED) return;
+      if (st === PS.BUFFERING && tries++ < 3) {
+        blockTimer.current = window.setTimeout(check, 800);
+        return;
+      }
+      muteFallback();
+    };
+    blockTimer.current = window.setTimeout(check, 1200);
+    fallback.current = muteFallback;
+  }, []);
+
+  /** Hang bekapcsolasa: az erintes felhasznaloi gesztus, ezert az unMute atmegy iOS-en is. */
+  const enableSound = () => {
+    const p = player.current;
+    safe(p, "unMute");
+    safe(p, "setVolume", 100);
+    sound.on = true;
+    setNeedSound(false);
+    track("unmute_click", { video_id: currentId.current });
+  };
+
   /** Videocsere a meglevo lejatszoban (egy lejatszo, nincs tobb parhuzamos hang). */
   const loadVideo = useCallback((id: string) => {
     if (loadedId.current === id) return;
     loadedId.current = id;
+    // A nemitott allapot atmegy a kovetkezo videora is: a gomb marad, amig nincs hang.
+    setNeedSound(!sound.on && !!safe(player.current, "isMuted"));
     safe(player.current, "loadVideoById", id);
-  }, []);
+    begin(player.current);
+  }, [begin]);
 
   const goTo = useCallback(
     (v: Video, how: string) => {
@@ -84,12 +137,20 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
               setResume(r);
               e.target.seekTo(r, true);
             }
-            e.target.playVideo();
+            begin(e.target);
+          },
+          onAutoplayBlocked: () => {
+            if (!dead) fallback.current?.();
           },
           onStateChange: (e: any) => {
             if (dead) return;
             const YTP = (window as any).YT.PlayerState;
-            if (e.data === YTP.PLAYING) claimAudio(inst);
+            if (e.data === YTP.PLAYING) {
+              claimAudio(inst);
+              const muted = !!safe(inst, "isMuted");
+              if (!muted) sound.on = true;
+              setNeedSound(muted);
+            }
             if (e.data === YTP.ENDED) {
               markWatched(currentId.current);
               track("video_complete", { video_id: currentId.current });
@@ -105,10 +166,12 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
     return () => {
       dead = true;
       unregisterPlayer(token);
+      startTok.current++;
+      if (blockTimer.current) clearTimeout(blockTimer.current);
       teardownPlayer(player.current);
       player.current = null;
     };
-    // szandekosan ures: a lejatszo egyszer jon letre
+    // szandekosan ures: a lejatszo egyszer jon letre (a begin stabil)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -132,6 +195,7 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
     saveTimer.current = window.setInterval(() => {
       const p = player.current;
       if (!p?.getCurrentTime) return;
+      if (p.isMuted && !p.isMuted()) setNeedSound(false);
       const t = p.getCurrentTime();
       const d = p.getDuration();
       if (!d) return;
@@ -172,6 +236,16 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
           >
             <Wordmark size="lg" className="kf-intro-word" />
           </div>
+        )}
+
+        {needSound && !ended && (
+          <button
+            onClick={enableSound}
+            aria-label="Hang bekapcsolása"
+            className="absolute left-3 top-3 z-30 flex min-h-12 items-center gap-2 rounded-full bg-primary px-5 py-3 text-base font-bold text-primary-foreground shadow-lg transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            <Volume2 className="h-5 w-5" aria-hidden="true" /> Hang bekapcsolása
+          </button>
         )}
 
         {onClose && (
