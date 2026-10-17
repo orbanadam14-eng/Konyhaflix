@@ -40,6 +40,8 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
   const currentId = useRef(video.id);
   const currentTitle = useRef(video.title);
   const loadedId = useRef(video.id);
+  const currentSource = useRef(source);
+  currentSource.current = source;
 
   const next = queue[0];
   const alts = queue.slice(1, 4);
@@ -48,6 +50,7 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
   const loadVideo = useCallback((id: string) => {
     if (loadedId.current === id) return;
     loadedId.current = id;
+    // Onready elott a metodus nem letezik: az onReady szinkronizal a loadedId-hez.
     safe(player.current, "loadVideoById", id);
   }, []);
 
@@ -56,6 +59,7 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
       setEnded(false);
       setCancelled(false);
       setCount(COUNTDOWN);
+      setResume(0);
       marks.current = new Set();
       track("video_next", { from_video: video.id, to_video: v.id, how });
       loadVideo(v.id);
@@ -73,12 +77,19 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
     loadYT().then((YT) => {
       if (dead || !host.current || player.current) return;
       loadedId.current = currentId.current;
+      const createdId = loadedId.current;
       const inst = new YT.Player(host.current, {
         videoId: currentId.current,
         playerVars: PLAYER_VARS,
         events: {
           onReady: (e: any) => {
             if (dead) return;
+            // Ha onReady elott mas videora valtottunk, most vegre azt toltjuk be.
+            if (loadedId.current !== createdId) {
+              setResume(0);
+              safe(e.target, "loadVideoById", loadedId.current);
+              return;
+            }
             const r = resumeAt(loadedId.current);
             if (r) {
               setResume(r);
@@ -124,8 +135,10 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
       setResume(0);
       loadVideo(video.id);
     }
-    track("video_start", { video_id: video.id, video_title: video.title, source });
-  }, [video.id, video.title, source, loadVideo]);
+    // A source a navigacioval egyutt valtozik, de egy rendernyivel a video elott: ezert
+    // ref-bol olvassuk, es csak video-valtasra tuzelunk (egyszer videonkent).
+    track("video_start", { video_id: video.id, video_title: video.title, source: currentSource.current });
+  }, [video.id, video.title, loadVideo]);
 
   // Haladas mentese es negyedelesi esemenyek.
   useEffect(() => {
