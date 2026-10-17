@@ -7,8 +7,10 @@ const UTM_KEY = "kf_utm";
 
 declare global {
   interface Window {
-    dataLayer?: Record<string, unknown>[];
+    dataLayer?: unknown[];
     fbq?: (...args: unknown[]) => void;
+    gtag?: (...args: unknown[]) => void;
+    __kfLive?: boolean;
   }
 }
 
@@ -50,6 +52,36 @@ function sendToMeta(event: string, data: Record<string, unknown>) {
   }
 }
 
+/**
+ * GA4: minden belso esemeny megy, a sajat nevevel (snake_case).
+ * Csak egyszeru (string/szam/bool) ertek megy ki. A contact_id szandekosan
+ * nem: belso GHL azonosito, GA4-ben nincs helye.
+ */
+function ga4Params(event: string, data: Record<string, unknown>) {
+  const out: Record<string, string | number | boolean> = {};
+  for (const [k, v] of Object.entries(data)) {
+    if (k === "contact_id" || k === "path") continue;
+    if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") out[k] = v;
+  }
+  if (event === "page_view") {
+    out.page_path = typeof data.path === "string" ? data.path : window.location.pathname + window.location.search;
+    out.page_location = window.location.href;
+    out.page_title = document.title;
+  } else if (typeof data.path === "string") {
+    out.path = data.path;
+  }
+  return out;
+}
+
+function sendToGA(event: string, data: Record<string, unknown>) {
+  if (typeof window.gtag !== "function") return;
+  try {
+    window.gtag("event", event, ga4Params(event, data));
+  } catch {
+    // A meres soha ne allitsa meg a nezest.
+  }
+}
+
 export function initTracking() {
   if (typeof window === "undefined") return;
   const p = new URLSearchParams(window.location.search);
@@ -73,6 +105,7 @@ export function track(event: string, data: Record<string, unknown> = {}) {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event, contact_id: contactId(), ...data });
   sendToMeta(event, data);
+  sendToGA(event, data);
 }
 
 // Hany videot nezett meg ebben az ulesben, es osszesen.

@@ -21,25 +21,34 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <!-- GOOGLE TAG MANAGER: ide jon a GTM-XXXXXXX konteneres kod.
-         Amig ez ures, a dataLayer esemenyek nem mennek sehova. -->
-
-    <!-- META PIXEL: Konyhaszakerto keppontja.
-         Csak betolti es inicializalja a pixelt. A PageView-t es a tobbi
-         esemenyt a src/lib/track.ts kuldi, hogy az oldalvaltasok is merve
-         legyenek (egyoldalas alkalmazas). -->
+    <!-- MERES: GA4 (gtag.js) es Meta pixel. Csak az eles gazdan toltodik be
+         (konyhaszakerto.hu es aldomainjei, pl. videotar.konyhaszakerto.hu).
+         Vercel elonezeten es localhoston semmi nem tolt be es semmi nem megy ki.
+         A page_view-t es az osszes esemenyt a src/lib/track.ts kuldi
+         (egyoldalas alkalmazas), ezert send_page_view: false es nincs fbq PageView itt. -->
     <script>
-      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-      document,'script','https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '1556935778428846');
+      var KF_LIVE = /(^|\.)konyhaszakerto\.hu$/.test(location.hostname);
+      window.__kfLive = KF_LIVE;
+      if (KF_LIVE) {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', 'G-M56305EC20', { send_page_view: false });
+        var g = document.createElement('script');
+        g.async = true;
+        g.src = 'https://www.googletagmanager.com/gtag/js?id=G-M56305EC20';
+        document.head.appendChild(g);
+
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+        n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+        document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1556935778428846');
+      }
     </script>
   </head>
   <body>
-    <noscript><img height="1" width="1" style="display:none" alt=""
-      src="https://www.facebook.com/tr?id=1556935778428846&ev=PageView&noscript=1" /></noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
