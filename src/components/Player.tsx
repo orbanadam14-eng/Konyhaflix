@@ -74,7 +74,7 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
             const YTP = (window as any).YT.PlayerState;
             if (e.data === YTP.ENDED) {
               markWatched(currentId.current);
-              track("video_complete", { video_id: currentId.current });
+              track("video_complete", { video_id: currentId.current, video_title: currentTitle.current });
               reportWatch(currentId.current, currentTitle.current);
               setEnded(true);
             }
@@ -116,7 +116,7 @@ export default function Player({ video, queue, source, vertical, onChange, onClo
       [25, 50, 75].forEach((m) => {
         if (pct >= m && !marks.current.has(m)) {
           marks.current.add(m);
-          track(`video_${m}`, { video_id: currentId.current });
+          track(`video_${m}`, { video_id: currentId.current, video_title: currentTitle.current });
         }
       });
     }, 5000);
