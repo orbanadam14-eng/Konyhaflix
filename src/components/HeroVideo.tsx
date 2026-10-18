@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef } from "react";
-import { loadYT } from "../lib/yt";
+import { loadYT, registerPlayer, teardownPlayer, safe, hasMainPlayer, onMainChange } from "../lib/yt";
 
 /**
  * A hero hattervideoja. A YouTube loop parametere mindig az elejere ugrik vissza,
@@ -13,6 +13,20 @@ export default function HeroVideo({ id, start, seconds = 50 }: { id: string; sta
   useEffect(() => {
     let dead = false;
     let timer: number | undefined;
+    let off: (() => void) | undefined;
+
+    // Amig videooldal / modal nyitva van, a hero nem jatszik. Bezaraskor ujra indul.
+    const sync = () => {
+      const p = player.current;
+      if (!p) return;
+      if (hasMainPlayer()) {
+        safe(p, "mute");
+        safe(p, "pauseVideo");
+      } else {
+        safe(p, "mute");
+        safe(p, "playVideo");
+      }
+    };
 
     loadYT().then((YT) => {
       if (dead || !host.current || player.current || !YT) return;
@@ -32,14 +46,16 @@ export default function HeroVideo({ id, start, seconds = 50 }: { id: string; sta
           onReady: (e: any) => {
             e.target.mute();
             e.target.seekTo(start, true);
-            e.target.playVideo();
+            sync();
           },
         },
       });
+      registerPlayer(player.current, false);
+      off = onMainChange(sync);
 
       timer = window.setInterval(() => {
         const p = player.current;
-        if (!p || !p.getCurrentTime) return;
+        if (!p || !p.getCurrentTime || hasMainPlayer()) return;
         const t = p.getCurrentTime();
         if (t < start - 1 || t > start + seconds) p.seekTo(start, true);
       }, 1000);
@@ -48,11 +64,8 @@ export default function HeroVideo({ id, start, seconds = 50 }: { id: string; sta
     return () => {
       dead = true;
       if (timer) clearInterval(timer);
-      try {
-        if (player.current && player.current.destroy) player.current.destroy();
-      } catch {
-        /* ures */
-      }
+      off?.();
+      teardownPlayer(player.current);
       player.current = null;
     };
   }, [id, start, seconds]);
